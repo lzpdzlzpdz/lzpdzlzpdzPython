@@ -1,0 +1,11 @@
+1. 本地
+Write a Code
+
+2. 本地代码，添加到本地Git分支
+git commit -a -m 'xxx'
+
+3. 本地Git分支推送到远程Git分支
+git push
+
+4. 远程Git分支合并到Mater
+Merge

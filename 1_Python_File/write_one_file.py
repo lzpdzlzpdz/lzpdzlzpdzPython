@@ -1,6 +1,6 @@
 #=coding:utf-8
 """
-function:write file
+function:read file
 author:lzpdzlzpdz
 
 description:

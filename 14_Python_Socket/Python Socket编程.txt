@@ -1,0 +1,86 @@
+python 网络编程1 TCP/UDP  
+
+第一部分 底层网络
+
+第一章 客户/服务器网络介绍
+
+1.1 理解TCP基础，UDP，以太网和客户/服务器模式
+
+TCP/IP是标准的协议，是全世界计算机通信的基础。
+TCP/IP不是一个协议，而是一些协议的集合
+协议栈（Protocol Stack）是指网络中各层协议的总和，其形象的反映了一个网络中文件传输的过程：由上层协议到底层协议，再由底层协议到上层协议。使用最广泛的是英特网协议栈，由上到下的协议分别是：应用层（HTTP，FTP，TFTP，TELNET，DNS，EMAIL等），运输层（TCP，UDP），网络层（IP），链路层（WI-FI，以太网，令牌环，FDDI，MAC等），物理层。
+基于ip协议，每个机器都有一个地址如192.168.0.1，同时tcp需要知道是与这个地址的哪个程序通信，因此要给每个程序分配一个端口号。有了地址和端口号就可以通信了，但是记住地址很困难，所以出现了DNS，如www.baidu.com，访问这个地址，DNS会给你提供IP地址。
+~~~SectionDelimiter~~~
+ 
+
+
+# IP地址
+def test5():
+    import socket
+    hostname = 'maps.google.com'
+    addr = socket.gethostbyname(hostname)
+    print 'The address of', hostname, 'is', addr
+#The address of maps.google.com is 74.125.235.195
+#127.*.*.* local   127.0.0.1=localhost本机
+#10.*.*.*, 172.16–31.*.*, 192.168.*.*private subnets 不会被分发，因此可用于internal networks
+
+可靠性。TCP协议：效验（防止损坏）；收到信息要求反馈（防止丢失），未收到反馈重发；信息序号（防止重复和顺序错误）
+在Internet上负责接收信息包并决定如何把它们传输到目的地的设备叫路由器。
+服务器端口号：服务器通常是侦听一个大家都知道的端口号，如web服务侦听80端口号，所哟访问www.baidu.com浏览器知道连接ip地址的80端口。客户端端口号一般是系统自动分配。
+UDP协议用于：DNS系统，流式的音频视频应用软件。一般：不关心顺序，可靠性要求没那么高，需要快速，很少数据，基本请求回答。
+本地网络通信：直接发送信息，或者广播；外网机器通信：把信息发送给一个本地网络的路由器，然后由路由器决定发往哪里。怎么知道哪些是本地的？使用网络掩码表明需要比较几位，比较失败了即开始几位不同，那么必须要经过路由器。
+Packet Fragmentation包太大(<64k,如以太网<1.5k)时,需要分包。Packet有一个 “don’t fragment” (DF) 标记，没有这个标记(udp)就会在路由被分包到达目的路由组装，如果设置了(tcp)，那么这么包就会被丢弃，返回一个error message –“Internet Control Message Protocol” (ICMP) packet给发送者。
+
+通过几个例子理解tcp的工作和协议栈
+
+
+#几个例子，由高层到底层
+# 例子一，使用googlemaps的服务can not use anymore
+from googlemaps import GoogleMaps
+address = '207 N. Defiance St, Archbold, OH'
+print(GoogleMaps().address_to_latlng(address))
+
+# 例子二，自行使用urllib取访问接口，并且解析结果
+import urllib,urllib2
+import json
+params = {'address': '207 N. Defiance St, Archbold, OH', 'sensor': 'false'}
+url='http://maps.googleapis.com/maps/api/geocode/json?'+urllib.urlencode(params)
+rawreply=urllib2.urlopen(url).read()
+#print(rawreply)
+reply=json.loads(rawreply)
+print reply['results'][0]['geometry']['location']
+
+# 例子三，不使用urllib，而直接使用urllib底层的http协议
+def test3():
+    import json
+    import httplib
+    # 这个是从例子二中打出来的
+    path = '/maps/api/geocode/json?sensor=false&address=207+N.+Defiance+St,+Archbold,+OH'
+    connection=httplib.HTTPConnection('maps.googleapis.com')# 无http://
+    connection.request('GET',path)#大写
+    rawreply=connection.getresponse().read()
+    reply=json.loads(rawreply)
+    print reply['results'][0]['geometry']['location']
+
+# 例子四，更进底层一步，不使用http库，而直接使用socket发送一段符合http协议的信息
+def test4():
+    import socket # basic network communications on an IP network
+    sock = socket.socket()
+    sock.connect(('maps.google.com', 80))
+    sock.sendall(
+    'GET /maps/api/geocode/json?sensor=false&address=207+N.+Defiance+St,+Archbold,+OH HTTP/1.1\r\n'
+    'Host: maps.google.com:80\r\n'
+    'User-Agent: search4.py\r\n'
+    'Connection: close\r\n'
+    '\r\n')
+    rawreply = sock.recv(4096) #buffsize=4096
+    print rawreply
+
+# 更底层：
+? Transmission Control Protocol (TCP)协议, sockets执行此协议用于网络交互
+? The Internet Protocol (IP)协议, 告诉socket如何吧信息（包packets）传送给不同的电脑
+? “link layer”数据链路层，在更底层，包括了网络的硬件设备如网卡，以太接口。可以直接在不同的直接互联的电脑之间发送物理信息。
+
+
+
+

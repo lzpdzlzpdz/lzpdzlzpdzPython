@@ -21,8 +21,10 @@ Fork and send pull request.
 
     mysql> create database f2e;
     mysql> exit
-
-    shell> mysql -u YOURUSERNAME -p --database=f2e < dbstructure/f2e.sql
+    shell> cd path of f2e.sql
+	       such as cd E:\8_Git\Git_Python_Code\lzpdzlzpdzPython\93_myF2E-master\dbstructure
+    shell> mysql -u root -p --database=f2e < f2e.sql
+	shell> mysql -u root -p --database=myf2e < myf2e.sql
     ```
 
 3. set your mysql user/password and smtp server config in `application.py` and `lib/sendmail.py`.

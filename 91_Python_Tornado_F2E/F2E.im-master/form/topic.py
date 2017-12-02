@@ -7,6 +7,7 @@
 
 from wtforms import TextField, HiddenField, validators
 from lib.forms import Form
+import re
 
 class ReplyForm(Form):
     content = TextField('Content', [
@@ -18,16 +19,17 @@ class ReplyForm(Form):
     ])
 
 class CreateForm(Form):
+    print 'CreateForm'
     title = TextField('Title', [
         validators.Required(message = "请填写帖子标题"),
         validators.Length(min = 3, message = "帖子标题长度过短（3-56个字符）"),
         validators.Length(max = 56, message = "帖子标题长度过长（3-56个字符）"),
     ])
-
     content = TextField('Content', [
         validators.Required(message = "请填写帖子内容"),
         validators.Length(min = 15, message = "帖子内容长度过短（少于15个字符）"),
     ])
+
 
 class ReplyEditForm(Form):
     content = TextField('Content', [

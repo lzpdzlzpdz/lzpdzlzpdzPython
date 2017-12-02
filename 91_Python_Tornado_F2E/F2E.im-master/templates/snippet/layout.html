@@ -6,7 +6,7 @@
     <meta content="yes" name="apple-mobile-web-app-capable" />
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
     <meta name="format-detection" content="telephone=no" />
-    <title>{% block title %}F2E - 前端技术社区{% endblock %}</title>
+    <title>{% block title %}PyUp - Python技术社区{% endblock %}</title>
     <script type="text/javascript" src="/static/js/base/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="/static/js/base/bootstrap.min.js"></script>
     <script type="text/javascript" src="/static/js/base/in-min.js"></script>
@@ -64,7 +64,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
-            <a class="brand" href="/">F2E</a>
+            <a class="brand" href="/">PyUp</a>
             <div class="divider-vertical"></div>
             {% if current_user %}
                 {% if notifications_count %}
@@ -93,6 +93,9 @@
                     ('/members', 'members', '成员'),
                     ('/static/pages/timeline/index.html', 'timeline', '大事记'),
                     ('/static/pages/nav/index.html', 'nav', '导航'),
+                    ('/t/create/{{ node_slug }}', 'nav', '博客'),
+                    ('/static/pages/mytools/mytools_main.html', 'nav', '工具'),
+                    ('/t/create/{{ node_slug }}', 'nav', '娱乐'),
                 ] -%}
 
                 {% set active_page = active_page|default('index') -%}

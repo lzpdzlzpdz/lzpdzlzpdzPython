@@ -75,6 +75,7 @@ class NodeTopicsHandler(BaseHandler):
 
 class ViewHandler(BaseHandler):
     def get(self, topic_id, template_variables = {}):
+        print 'ViewHandler get'
         user_info = self.current_user
         page = int(self.get_argument("p", "1"))
         user_info = self.get_current_user()
@@ -109,6 +110,13 @@ class ViewHandler(BaseHandler):
             "reply_count": template_variables["replies"]["page"]["total"],
             "hits": (template_variables["topic"]["hits"] or 0) + 1,
         })
+
+        print template_variables["current_page"]
+        print 'old'
+        print template_variables["topic"]['content']
+        content = template_variables["topic"]['content']
+
+
 
         self.render("topic/view.html", **template_variables)
 
@@ -230,12 +238,13 @@ class CreateHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self, node_slug = None, template_variables = {}):
         template_variables = {}
-
+        print 'CreateHandler post'
         # validate the fields
 
         form = CreateForm(self)
-
+        print form.content.data
         if not form.validate():
+            print 'validate fail'
             self.get(node_slug, {"errors": form.errors})
             return
 
@@ -245,8 +254,10 @@ class CreateHandler(BaseHandler):
         last_created = self.topic_model.get_user_last_created_topic(self.current_user["uid"])
 
         if last_created:
-            last_created_fingerprint = hashlib.sha1(last_created.title + last_created.content + str(last_created.node_id)).hexdigest()
-            new_created_fingerprint = hashlib.sha1(form.title.data + form.content.data + str(node["id"])).hexdigest()
+            #last_created_fingerprint = hashlib.sha1(last_created.title + last_created.content + str(last_created.node_id)).hexdigest()
+            #new_created_fingerprint = hashlib.sha1(form.title.data + form.content.data + str(node["id"])).hexdigest()
+            last_created_fingerprint = hashlib.sha1(last_created.title + last_created.content ).hexdigest()
+            new_created_fingerprint = hashlib.sha1(form.title.data + form.content.data ).hexdigest()
 
             if last_created_fingerprint == new_created_fingerprint:
                 template_variables["errors"] = {}
@@ -257,9 +268,7 @@ class CreateHandler(BaseHandler):
         topic_info = {
             "author_id": self.current_user["uid"],
             "title": form.title.data,
-            # "content": XssCleaner().strip(form.content.data),
             "content": form.content.data,
-            "node_id": node["id"],
             "created": time.strftime('%Y-%m-%d %H:%M:%S'),
             "reply_count": 0,
             "last_touched": time.strftime('%Y-%m-%d %H:%M:%S'),

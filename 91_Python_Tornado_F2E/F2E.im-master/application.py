@@ -26,25 +26,26 @@ import handler.user
 import handler.topic
 import handler.page
 import handler.notification
+import handler.mytools
 
 from tornado.options import define, options
 from lib.loader import Loader
 from lib.session import Session, SessionManager
 from jinja2 import Environment, FileSystemLoader
 
-define("port", default = 9001, help = "run on the given port", type = int)
+define("port", default = 3311, help = "run on the given port", type = int)
 define("mysql_host", default = "localhost", help = "community database host")
 define("mysql_database", default = "f2e", help = "community database name")
 define("mysql_user", default = "root", help = "community database user")
-define("mysql_password", default = "mysql_db_password", help = "community database password")
+define("mysql_password", default = "password", help = "community database password")
 
 class Application(tornado.web.Application):
     def __init__(self):
         settings = dict(
-            blog_title = u"F2E Community",
+            blog_title = u"PyUp Community",
             template_path = os.path.join(os.path.dirname(__file__), "templates"),
             static_path = os.path.join(os.path.dirname(__file__), "static"),
-            xsrf_cookies = True,
+            xsrf_cookies = False,
             cookie_secret = "cookie_secret_code",
             login_url = "/login",
             autoescape = None,
@@ -76,6 +77,11 @@ class Application(tornado.web.Application):
             (r"/login", handler.user.LoginHandler),
             (r"/logout", handler.user.LogoutHandler),
             (r"/register", handler.user.RegisterHandler),
+
+            #start of tools
+            (r"/mytools/poem", handler.mytools.PoemPageHandler),
+            (r"/compose", handler.mytools.ComposeHandler),
+            #end of tools
 
             (r"/(favicon\.ico)", tornado.web.StaticFileHandler, dict(path = settings["static_path"])),
             (r"/(sitemap.*$)", tornado.web.StaticFileHandler, dict(path = settings["static_path"])),
@@ -113,6 +119,7 @@ class Application(tornado.web.Application):
 def main():
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
+    print options.port
     http_server.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
 

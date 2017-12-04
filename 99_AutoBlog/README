@@ -1,3 +1,6 @@
+1. 基于tornado blog example例子，搭建属于自己的blog
+2. 具备博客、爬虫、工具、游戏功能。
+
 Running the Tornado Blog example app
 ====================================
 This demo is a simple blogging engine that uses MySQL to store posts and

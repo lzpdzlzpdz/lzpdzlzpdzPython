@@ -79,7 +79,11 @@ class Application(tornado.web.Application):
             (r"/register", handler.user.RegisterHandler),
 
             #start of tools
-            (r"/mytools/poem", handler.mytools.PoemPageHandler),
+
+            (r"/mytools/mytools_main/(.*)", handler.mytools.MytoolsMainHandler),
+            (r"/mytools/poem/poem_in", handler.mytools.PoemPageCreateHandler),
+            (r"/mytools/poem/poem_out", handler.mytools.PoemPageShowHandler),
+
             (r"/compose", handler.mytools.ComposeHandler),
             #end of tools
 

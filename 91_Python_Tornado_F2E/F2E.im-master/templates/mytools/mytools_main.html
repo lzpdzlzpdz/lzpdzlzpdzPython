@@ -2,10 +2,25 @@
 
 {% block main %}
     <div class="topic-create container-box">
-          <h1>Your poem</h1>
-          <p>Two {{roads}} diverged in a {{wood}}, and I—<br>
-            I took the one less travelled by,<br>
-            And that has {{made}} all the {{difference}}.</p>
+        <div class="ui-header">
+            <h1>1.Enter terms below.</h1>
+        </div>
+
+        <div class="ui-content">
+             <form  class="mt10" method="get" >
+                 <a href="../poem/poem_in">create a poem</a>
+             </form>
+        </div>
+
+
+        <div class="ui-header">
+            <h1>2. Create a SimpleBlog</h1>
+        </div>
+        <div class="ui-content">
+             <form  class="mt10" method="get">
+                 <a rows="3" href="/compose">create a SimpleBlog</a>
+             </form>
+        </div>
     </div>
 {% endblock %}
 
@@ -44,3 +59,7 @@
         </div>
     {% endif %}
 {% endblock %}
+
+
+
+

@@ -19,15 +19,75 @@ import lib.jsonp
 from base import *
 from lib.variables import *
 
-class PoemPageHandler(tornado.web.RequestHandler):
-     def post(self):
+
+class MytoolsMainHandler(BaseHandler):
+    def get(self, topic_id, template_variables = {}):
+        print 'MytoolsMainHandler\n'
+
+        user_info = self.current_user
+        page = int(self.get_argument("p", "1"))
+        user_info = self.get_current_user()
+
+
+        template_variables["user_info"] = user_info
+        if (user_info):
+            template_variables["user_info"]["counter"] = {
+                "topics": self.topic_model.get_user_all_topics_count(user_info["uid"]),
+                "replies": self.reply_model.get_user_all_replies_count(user_info["uid"]),
+                "favorites": self.favorite_model.get_user_favorite_count(user_info["uid"]),
+            }
+        
+        template_variables["gen_random"] = gen_random
+
+        print template_variables
+        print 'hello'
+        self.render('mytools/mytools_main.html', **template_variables)
+
+
+class PoemPageShowHandler(BaseHandler):
+     def post(self, template_variables = {}):
          print 'PoemPageHandler\n'
+
+         user_info = self.current_user
+         page = int(self.get_argument("p", "1"))
+         user_info = self.get_current_user()
+         template_variables["user_info"] = user_info
+         if(user_info):
+             template_variables["user_info"]["counter"] = {
+                 "topics": self.topic_model.get_user_all_topics_count(user_info["uid"]),
+                 "replies": self.reply_model.get_user_all_replies_count(user_info["uid"]),
+                 "favorites": self.favorite_model.get_user_favorite_count(user_info["uid"]),
+             }
+
+         template_variables["gen_random"] = gen_random
+
          noun1 = self.get_argument('noun1')
          noun2 = self.get_argument('noun2')
          verb = self.get_argument('verb')
          noun3 = self.get_argument('noun3')
          self.render('mytools/poem/poem_out.html', roads=noun1, wood=noun2, made=verb,
-         difference=noun3)
+         difference=noun3, **template_variables)
+
+
+class PoemPageCreateHandler(BaseHandler):
+    def get(self, template_variables = {}):
+        print 'PoemPageCreateHandler\n'
+
+        user_info = self.current_user
+        page = int(self.get_argument("p", "1"))
+        user_info = self.get_current_user()
+        template_variables["user_info"] = user_info
+        if (user_info):
+            template_variables["user_info"]["counter"] = {
+                "topics": self.topic_model.get_user_all_topics_count(user_info["uid"]),
+                "replies": self.reply_model.get_user_all_replies_count(user_info["uid"]),
+                "favorites": self.favorite_model.get_user_favorite_count(user_info["uid"]),
+            }
+
+        template_variables["gen_random"] = gen_random
+
+        self.render('/mytools/poem/poem_in.html', **template_variables)
+
 
 class ComposeHandler(BaseHandler):
     @tornado.web.authenticated

@@ -15,7 +15,7 @@
  */
 
 body {
-  background: white;
+  background:aliceblue;
   color: black;
   margin: 15px;
   margin-top: 0;
@@ -68,16 +68,15 @@ a code {
   color: #00c;
 }
 
+/*设置窗体宽度*/
 #body {
-  max-width: 800px;
   margin: auto;
 }
 
+/*首页：新导航*/
 #header {
-  background-color: #3b5998;
-  padding: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
+
+  background-color: #333;
   margin-bottom: 1em;
 }
 
@@ -86,9 +85,39 @@ a code {
   color: white;
 }
 
+
 #header h1 a {
   text-decoration: none;
 }
+
+#header ul {
+    list-style-type: none;
+    margin: auto;
+    width: 60%;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+#header li {
+
+    float: left;
+}
+
+#header li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+#header li a:hover {
+    background-color: #111;
+}
+
+
+
 
 #footer,
 #content {

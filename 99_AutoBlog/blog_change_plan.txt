@@ -1,17 +1,115 @@
-<div class="topic-item">
-                <a href="/u/lzpdzlzpdz">
-                    <img src="/static/avatar/m_8ffec35f-18c3-524d-90fd-f2fb36ce4206.png" alt="" class="avatar">
-                </a>
-                <div class="main">
-                    <h3 class="title">
-                        <a href="/t/4#reply0">【Tornado】Tornado博客</a>
-                    </h3>
-                    <div class="meta">
-                        <span class="node"><a href="/node/None">None</a></span> • 
-                        <span class="username">
-                            <a href="/u/lzpdzlzpdz">lzpdzlzpdz</a>
-                        </span> • 
-                                                    <span class="last-touched">17 小时前</span>
-                                            </div>
-                </div>
-                            </div>
+1. AutoBlog header
+<div id="header">
+<div style="float:right">
+
+<a href="/compose">New post</a> -
+<a href="/auth/logout?next=%2Farchive">Sign out</a>
+
+</div>
+<h1><a href="/">Tornado Blog</a></h1>
+</div>
+
+code:
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ escape(handler.settings["blog_title"]) }}</title>
+    <link rel="stylesheet" href="{{ static_url("blog.css") }}" type="text/css">
+    <link rel="alternate" href="/feed" type="application/atom+xml" title="{{ escape(handler.settings["blog_title"]) }}">
+    {% block head %}{% end %}
+  </head>
+  
+2. F2E header
+<div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="/">PyUp</a>
+            <div class="divider-vertical"></div>
+                        <div class="nav-collapse collapse">
+            
+                <ul class="nav">
+                                            <li class="active">
+                            <a href="/">社区</a>
+                        </li>
+                                            <li>
+                            <a href="/members">成员</a>
+                        </li>
+                                            <li>
+                            <a href="/static/pages/timeline/index.html">大事记</a>
+                        </li>
+                                            <li>
+                            <a href="/static/pages/nav/index.html">导航</a>
+                        </li>
+                                            <li>
+                            <a href="/t/create/{{ node_slug }}">博客</a>
+                        </li>
+                                            <li>
+                            <a href="/static/pages/mytools/mytools_main.html">工具</a>
+                        </li>
+                                            <li>
+                            <a href="/t/create/{{ node_slug }}">娱乐</a>
+                        </li>
+                                    </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+		
+code:
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>{% block title %}PyUp - Python技术社区{% endblock %}</title>
+    <script type="text/javascript" src="/static/js/base/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="/static/js/base/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/base/in-min.js"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/css/main.css?t=20130807001.css" />
+    <link rel="apple-touch-icon" href="/static/images/f2e.im.icon.png">
+    {% block stylesheet %}{% endblock %}
+    {% block javascript %}{% endblock %}
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            $('.J_search').submit(function(e) {
+                var _node = $(this);
+                var query = _node.find('input').val();
+                e.preventDefault();
+                window.open('http://www.google.com/search?q=site:f2e.im/t%20' + query, "_blank");
+            });
+        });
+    </script>
+    {#
+    <script type="text/javascript" src="/static/js/widget/jquery.scrolltotop-min.js"></script>
+    #}
+    <style type="text/css">
+        .totop a {
+            display: block;
+            width: 40px;
+            height: 35px;
+            background: url('/static/images/totop.gif') no-repeat;
+            text-indent: -9999px;
+            text-decoration: none;
+        }
+
+        .totop a:hover {
+            background-position: 0 -35px;
+        }
+    </style>
+    {#
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            $.scrolltotop({
+                className: 'totop',
+                controlHTML: '<a href="javascript:;">回到顶部↑</a>',
+                offsety: 10
+            });
+        });
+    </script>
+    #}
+</head>

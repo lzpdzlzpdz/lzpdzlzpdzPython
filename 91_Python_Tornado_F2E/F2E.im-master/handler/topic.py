@@ -79,6 +79,8 @@ class ViewHandler(BaseHandler):
         user_info = self.current_user
         page = int(self.get_argument("p", "1"))
         user_info = self.get_current_user()
+
+        print user_info
         template_variables["user_info"] = user_info
         if(user_info):
             template_variables["user_info"]["counter"] = {
@@ -221,6 +223,7 @@ class ViewHandler(BaseHandler):
 class CreateHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, node_slug = None, template_variables = {}):
+        print 'CreateHandler get'
         user_info = self.current_user
         template_variables["user_info"] = user_info
         template_variables["user_info"]["counter"] = {
@@ -237,8 +240,8 @@ class CreateHandler(BaseHandler):
 
     @tornado.web.authenticated
     def post(self, node_slug = None, template_variables = {}):
-        template_variables = {}
         print 'CreateHandler post'
+        template_variables = {}
         # validate the fields
 
         form = CreateForm(self)

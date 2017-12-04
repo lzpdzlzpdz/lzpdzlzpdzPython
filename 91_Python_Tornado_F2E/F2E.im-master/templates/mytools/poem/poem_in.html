@@ -2,10 +2,19 @@
 
 {% block main %}
     <div class="topic-create container-box">
-          <h1>Your poem</h1>
-          <p>Two {{roads}} diverged in a {{wood}}, and I—<br>
-            I took the one less travelled by,<br>
-            And that has {{made}} all the {{difference}}.</p>
+        <div class="ui-header">
+            <h1>Enter terms below.</h1>
+        </div>
+
+        <div class="ui-content">
+             <form  class="mt10"  method="post" action="/mytools/poem/poem_out">
+                 <p>Plural noun<br><input type="text" name="noun1"></p>
+                 <p>Singular noun<br><input type="text" name="noun2"></p>
+                 <p>Verb (past tense)<br><input type="text" name="verb"></p>
+                 <p>Noun<br><input type="text" name="noun3"></p>
+                 <input type="submit">
+            </form>
+        </div>
     </div>
 {% endblock %}
 

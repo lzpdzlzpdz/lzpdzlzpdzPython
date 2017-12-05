@@ -7,6 +7,10 @@
 
 # cat /etc/mime.types
 # application/octet-stream    crx
+'''
+url:
+http://tornado-zh-cn.readthedocs.io/zh_CN/latest/#
+'''
 
 import sys
 reload(sys)
@@ -33,7 +37,7 @@ from lib.loader import Loader
 from lib.session import Session, SessionManager
 from jinja2 import Environment, FileSystemLoader
 
-define("port", default = 3311, help = "run on the given port", type = int)
+define("port", default = 3333, help = "run on the given port", type = int)
 define("mysql_host", default = "localhost", help = "community database host")
 define("mysql_database", default = "f2e", help = "community database name")
 define("mysql_user", default = "root", help = "community database user")
@@ -120,11 +124,18 @@ class Application(tornado.web.Application):
         # Have one global memcache controller
         self.mc = memcache.Client(["127.0.0.1:11211"])
 
+
 def main():
+    #tornado server
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
     print options.port
     http_server.listen(options.port)
+
+    #timer
+    tornado.ioloop.PeriodicCallback(handler.mytools.f10s, 10*1000).start()  # start scheduler
+
+    #while(1)
     tornado.ioloop.IOLoop.instance().start()
 
 if __name__ == "__main__":

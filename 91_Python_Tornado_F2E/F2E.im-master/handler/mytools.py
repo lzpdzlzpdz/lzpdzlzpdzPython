@@ -18,7 +18,8 @@ import lib.jsonp
 
 from base import *
 from lib.variables import *
-
+import datetime
+import  webspider
 
 class MytoolsMainHandler(BaseHandler):
     def get(self, topic_id, template_variables = {}):
@@ -128,3 +129,14 @@ class ComposeHandler(BaseHandler):
                 "published) VALUES (%s,%s,%s,%s,%s,UTC_TIMESTAMP())",
                 self.current_user.id, title, slug, text, html)
         self.redirect("/entry/" + slug)
+
+
+#每隔10s执行一次f10s
+webspider_switch = True
+def f10s():
+    global webspider_switch
+    print '10s ', datetime.datetime.now()
+
+    if(webspider_switch == True):
+        webspider_switch = False
+        webspider.webspider_by_tornado()

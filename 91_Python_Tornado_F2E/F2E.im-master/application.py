@@ -60,6 +60,7 @@ class Application(tornado.web.Application):
         handlers = [
             (r"/", handler.topic.IndexHandler),
             (r"/t/(\d+)", handler.topic.ViewHandler),
+            (r"/t/create", handler.topic.CreateHandler),
             (r"/t/create/(.*)", handler.topic.CreateHandler),
             (r"/t/edit/(.*)", handler.topic.EditHandler),
             (r"/reply/edit/(.*)", handler.topic.ReplyEditHandler),

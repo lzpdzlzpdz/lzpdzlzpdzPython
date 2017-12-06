@@ -132,7 +132,7 @@ class ComposeHandler(BaseHandler):
 
 
 #每隔10s执行一次f10s
-webspider_switch = True
+webspider_switch = False
 def f10s():
     global webspider_switch
     print '10s ', datetime.datetime.now()

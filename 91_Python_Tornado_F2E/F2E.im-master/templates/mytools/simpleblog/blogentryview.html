@@ -1,0 +1,12 @@
+{% extends 'snippet/layout.html' %}
+
+{% block main %}
+    <div class="topic-create container-box">
+        <div class="ui-content">
+            <h3 class="title">{{ entry.title }}</h3>
+        </div>
+        <div class="ui-content">
+            <pre>{{ entry.markdown }}</pre>
+        </div>
+    </div>
+{% endblock %}

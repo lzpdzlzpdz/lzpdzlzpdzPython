@@ -20,6 +20,10 @@ from base import *
 from lib.variables import *
 import datetime
 import  webspider
+import  markdown
+from lib.variables import gen_random
+
+
 
 class MytoolsMainHandler(BaseHandler):
     def get(self, topic_id, template_variables = {}):
@@ -46,7 +50,7 @@ class MytoolsMainHandler(BaseHandler):
 
 
 class PoemPageShowHandler(BaseHandler):
-     def post(self, template_variables = {}):
+     def post(self,  template_variables = {}):
          print 'PoemPageHandler\n'
 
          user_info = self.current_user
@@ -90,52 +94,72 @@ class PoemPageCreateHandler(BaseHandler):
         self.render('/mytools/poem/poem_in.html', **template_variables)
 
 
-class ComposeHandler(BaseHandler):
+class CreateSimpleBlogHandler(BaseHandler):
     @tornado.web.authenticated
-    def get(self):
-        print 'ComposeHandler,get:'
-        id = self.get_argument("id", None)
-        entry = None
-        if id:
-            entry = self.db.get("SELECT * FROM entries WHERE id = %s", int(id))
-        self.render("mytools/simpleblog/compose.html", entry=entry)
+    def get(self, node_slug=None, template_variables={}):
+        print 'CreateHandler get'
+        user_info = self.current_user
+        template_variables["user_info"] = user_info
+        template_variables["user_info"]["counter"] = {
+            "topics": self.topic_model.get_user_all_topics_count(user_info["uid"]),
+            "replies": self.reply_model.get_user_all_replies_count(user_info["uid"]),
+            "favorites": self.favorite_model.get_user_favorite_count(user_info["uid"]),
+        }
+
+        template_variables["notifications_count"] = self.notification_model.get_user_unread_notification_count(
+            user_info["uid"]);
+        template_variables["gen_random"] = gen_random
+        template_variables["node_slug"] = node_slug
+        template_variables["active_page"] = "topic"
+        self.render("mytools/simpleblog/createblog.html", **template_variables)
+
 
     @tornado.web.authenticated
-    def post(self):
-        print 'ComposeHandler,post:'
+    def post(self, node_slug=None, template_variables={}):
+        print 'CreateHandler post'
         id = self.get_argument("id", None)
         title = self.get_argument("title")
         text = self.get_argument("markdown")
+        #markdown to html
         html = markdown.markdown(text)
-        if id:
-            entry = self.db.get("SELECT * FROM entries WHERE id = %s", int(id))
-            if not entry: raise tornado.web.HTTPError(404)
-            slug = entry.slug
-            self.db.execute(
-                "UPDATE entries SET title = %s, markdown = %s, html = %s "
-                "WHERE id = %s", title, text, html, int(id))
-        else:
-            slug = unicodedata.normalize("NFKD", title).encode(
-                "ascii", "ignore")
-            slug = re.sub(r"[^\w]+", " ", slug)
-            slug = "-".join(slug.lower().strip().split())
-            if not slug: slug = "entry"
-            while True:
-                e = self.db.get("SELECT * FROM entries WHERE slug = %s", slug)
-                if not e: break
-                slug += "-2"
-            self.db.execute(
-                "INSERT INTO entries (author_id,title,slug,markdown,html,"
-                "published) VALUES (%s,%s,%s,%s,%s,UTC_TIMESTAMP())",
-                self.current_user.id, title, slug, text, html)
-        self.redirect("/entry/" + slug)
+
+        curenttime = datetime.datetime.now()
+        print 'curenttime',curenttime
+        slug = str(curenttime)
+
+        self.simpleblogdb.execute(
+            "INSERT INTO entries (author_id,title,slug,markdown,html,"
+            "published) VALUES (%s,%s,%s,%s,%s,UTC_TIMESTAMP())",
+            self.current_user["uid"], title, slug, text, html)
+        self.redirect("mytools/simpleblog/viem.html" + slug)
+
+class ViewSimpleBlogListHandler(BaseHandler):
+    def get(self, node_slug=None, template_variables={}):
+        entries = self.simpleblogdb.query("SELECT * FROM entries ORDER BY published "
+                                "DESC")
+
+        template_variables["gen_random"] = gen_random
+        self.render("mytools/simpleblog/bloglistview.html", entries=entries, **template_variables)
+
+
+class ViemSimpleBlogEntryHandler(BaseHandler):
+    def get(self, node_slug=None, template_variables={}):
+        print 'ViemSimpleBlogEntryHandler11111'
+        entry = self.simpleblogdb.get("SELECT * FROM entries WHERE slug = %s", node_slug)
+        if not entry: raise tornado.web.HTTPError(404)
+
+        template_variables["gen_random"] = gen_random
+
+        print 'entry'
+        print  entry
+        self.render("mytools/simpleblog/blogentryview.html", entry=entry, **template_variables)
 
 
 #每隔10s执行一次f10s
 webspider_switch = False
 def f10s():
     global webspider_switch
-    print '10s ', datetime.datetime.now()
+    #print '10s ', datetime.datetime.now()
 
     if(webspider_switch == True):
         webspider_switch = False

@@ -19,7 +19,6 @@ class ReplyForm(Form):
     ])
 
 class CreateForm(Form):
-    print 'CreateForm'
     title = TextField('Title', [
         validators.Required(message = "请填写帖子标题"),
         validators.Length(min = 3, message = "帖子标题长度过短（3-56个字符）"),

@@ -1,0 +1,25 @@
+{% extends 'snippet/layout.html' %}
+
+{% block main %}
+    <div class="topic-create container-box">
+        <table class="table table-bordered">
+            <caption><h2>互联网精选信息</h2></caption>
+        <thead>
+            <tr>
+              <th>名称</th>
+              <th>创作时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in entries %}
+                <tr>
+                  <td><a href="simplebloglistview/{{ entry.slug }}">{{ entry.title }}</a></td>
+                  <td>{{ entry.slug }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+        {% endblock %}
+    </div>
+
+

@@ -145,8 +145,6 @@ class ComposeHandler(BaseHandler):
         id = self.get_argument("id", None)
         title = self.get_argument("title")
         text = self.get_argument("markdown")
-        text = re.sub(' ','&nbsp;',text)
-        text = re.sub('\r','<br/>',text)
         html = markdown.markdown(text)
         if id:
             entry = self.db.get("SELECT * FROM entries WHERE id = %s", int(id))
@@ -232,7 +230,7 @@ def main():
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options.port)
-    print options.port
+    print '127.0.0.1:%s'%options.port
     tornado.ioloop.IOLoop.current().start()
 
 

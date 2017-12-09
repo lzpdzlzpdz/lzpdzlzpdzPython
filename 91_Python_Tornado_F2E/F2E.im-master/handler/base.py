@@ -22,6 +22,10 @@ class BaseHandler(tornado.web.RequestHandler):
         return self.application.db
 
     @property
+    def simpleblogdb(self):
+        return  self.application.simpleblogdb
+
+    @property
     def user_model(self):
         return self.application.user_model
 

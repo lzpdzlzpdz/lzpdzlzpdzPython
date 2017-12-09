@@ -55,6 +55,7 @@ class Application(tornado.web.Application):
             autoescape = None,
             jinja2 = Environment(loader = FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")), trim_blocks = True),
             reserved = ["user", "topic", "home", "setting", "forgot", "login", "logout", "register", "admin"],
+            debug = True,
         )
 
         handlers = [
@@ -88,8 +89,9 @@ class Application(tornado.web.Application):
             (r"/mytools/mytools_main/(.*)", handler.mytools.MytoolsMainHandler),
             (r"/mytools/poem/poem_in", handler.mytools.PoemPageCreateHandler),
             (r"/mytools/poem/poem_out", handler.mytools.PoemPageShowHandler),
-
-            (r"/compose", handler.mytools.ComposeHandler),
+            (r"/b/createblog/(.*)", handler.mytools.CreateSimpleBlogHandler),
+            (r"/b/viewbloglist", handler.mytools.ViewSimpleBlogListHandler),
+            (r"/b/simplebloglistview/([^/]+)", handler.mytools.ViemSimpleBlogEntryHandler),
             #end of tools
 
             (r"/(favicon\.ico)", tornado.web.StaticFileHandler, dict(path = settings["static_path"])),
@@ -105,6 +107,11 @@ class Application(tornado.web.Application):
             host = options.mysql_host, database = options.mysql_database,
             user = options.mysql_user, password = options.mysql_password
         )
+
+        # create  one new global connection to the simpleblog DB across all handlers
+        self.simpleblogdb = torndb.Connection(
+            host=options.mysql_host, database= 'blog',
+            user=options.mysql_user, password=options.mysql_password)
 
         # Have one global loader for loading models and handles
         self.loader = Loader(self.db)
@@ -130,7 +137,7 @@ def main():
     #tornado server
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
-    print options.port
+    print '127.0.0.1:%s'%options.port
     http_server.listen(options.port)
 
     #timer

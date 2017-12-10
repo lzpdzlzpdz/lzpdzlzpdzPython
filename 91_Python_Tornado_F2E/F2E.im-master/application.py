@@ -32,10 +32,13 @@ import handler.page
 import handler.notification
 import handler.mytools
 
+
+
 from tornado.options import define, options
 from lib.loader import Loader
 from lib.session import Session, SessionManager
 from jinja2 import Environment, FileSystemLoader
+from app.NewsSpider.NewsSpider import *
 
 define("port", default = 3333, help = "run on the given port", type = int)
 define("mysql_host", default = "localhost", help = "community database host")
@@ -56,6 +59,7 @@ class Application(tornado.web.Application):
             jinja2 = Environment(loader = FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")), trim_blocks = True),
             reserved = ["user", "topic", "home", "setting", "forgot", "login", "logout", "register", "admin"],
             debug = True,
+            ui_modules={"Entry": handler.mytools.EntryModule},
         )
 
         handlers = [
@@ -133,7 +137,12 @@ class Application(tornado.web.Application):
         self.mc = memcache.Client(["127.0.0.1:11211"])
 
 
+
+
+
+
 def main():
+    app = Application()
     #tornado server
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
@@ -141,7 +150,8 @@ def main():
     http_server.listen(options.port)
 
     #timer
-    tornado.ioloop.PeriodicCallback(handler.mytools.f10s, 10*1000).start()  # start scheduler
+
+    tornado.ioloop.PeriodicCallback(f10s , 10*1000).start()  # start scheduler
 
     #while(1)
     tornado.ioloop.IOLoop.instance().start()

@@ -5,8 +5,15 @@
         <div class="ui-content">
             <h3 class="title">{{ entry.title }}</h3>
         </div>
-        <div class="ui-content">
-            <pre>{{ entry.markdown }}</pre>
+
+        <div class="main">
+            <div class="ui-content">
+                {{ entry.html|safe }}
+            </div>
+            <div class="ui-content">
+                <p1 class="title">[Markdown Code]:</p1>
+                {{ entry.markdown}}
+            </div>
         </div>
     </div>
 {% endblock %}

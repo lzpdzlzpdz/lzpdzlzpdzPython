@@ -25,6 +25,12 @@ from lib.variables import gen_random
 
 
 
+
+
+class EntryModule(tornado.web.UIModule):
+    def render(self, entry):
+        return self.render_string("mytools/simpleblog/markdownview.html", entry=entry)
+
 class MytoolsMainHandler(BaseHandler):
     def get(self, topic_id, template_variables = {}):
         print 'MytoolsMainHandler\n'
@@ -97,7 +103,7 @@ class PoemPageCreateHandler(BaseHandler):
 class CreateSimpleBlogHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, node_slug=None, template_variables={}):
-        print 'CreateHandler get'
+        print 'CreateSimpleBlogHandler get'
         user_info = self.current_user
         template_variables["user_info"] = user_info
         template_variables["user_info"]["counter"] = {
@@ -107,11 +113,12 @@ class CreateSimpleBlogHandler(BaseHandler):
         }
 
         template_variables["notifications_count"] = self.notification_model.get_user_unread_notification_count(
-            user_info["uid"]);
+            user_info["uid"])
         template_variables["gen_random"] = gen_random
         template_variables["node_slug"] = node_slug
         template_variables["active_page"] = "topic"
         self.render("mytools/simpleblog/createblog.html", **template_variables)
+
 
 
     @tornado.web.authenticated
@@ -122,7 +129,6 @@ class CreateSimpleBlogHandler(BaseHandler):
         text = self.get_argument("markdown")
         #markdown to html
         html = markdown.markdown(text)
-
         curenttime = datetime.datetime.now()
         print 'curenttime',curenttime
         slug = str(curenttime)
@@ -131,8 +137,8 @@ class CreateSimpleBlogHandler(BaseHandler):
             "INSERT INTO entries (author_id,title,slug,markdown,html,"
             "published) VALUES (%s,%s,%s,%s,%s,UTC_TIMESTAMP())",
             self.current_user["uid"], title, slug, text, html)
-        self.redirect("mytools/simpleblog/viem.html" + slug)
-
+        #self.redirect("mytools/simpleblog/bloglistview.html" + slug)
+        self.redirect("/b/viewbloglist")
 class ViewSimpleBlogListHandler(BaseHandler):
     def get(self, node_slug=None, template_variables={}):
         entries = self.simpleblogdb.query("SELECT * FROM entries ORDER BY published "
@@ -155,12 +161,3 @@ class ViemSimpleBlogEntryHandler(BaseHandler):
         self.render("mytools/simpleblog/blogentryview.html", entry=entry, **template_variables)
 
 
-#每隔10s执行一次f10s
-webspider_switch = False
-def f10s():
-    global webspider_switch
-    #print '10s ', datetime.datetime.now()
-
-    if(webspider_switch == True):
-        webspider_switch = False
-        webspider.webspider_by_tornado()

@@ -23,7 +23,7 @@ class SpiderNewsClass(object):
             host="localhost", database= 'blog',
             user="root", password="password")
 
-    def SaveSpiderNews(self, spider_news_content):
+    def SaveSpiderNews(self, spider_news_content, curenttime):
         node_slug = None
         template_variables = {}
         print 'SaveSpiderNews'
@@ -32,9 +32,9 @@ class SpiderNewsClass(object):
         text = spider_news_content
         #markdown to html
         html = markdown.markdown(text)
-        curenttime = datetime.datetime.now()
+
         print 'curenttime',curenttime
-        slug = str(curenttime)
+        slug = curenttime
 
 
         #save spider data to database:
@@ -46,6 +46,9 @@ class SpiderNewsClass(object):
         #self.redirect("/b/viewbloglist")
 
 
+
+
+
     def StringListSave(self, save_path, filename, slist):
         if not os.path.exists(save_path):
             os.makedirs(save_path)
@@ -54,7 +57,7 @@ class SpiderNewsClass(object):
             for s in slist:
                 fp.write("%s\t\t%s\n" % (s[0].encode("utf8"), s[1].encode("utf8")))
 
-    def StringListSaveContent(self,save_path, filename, slist):
+    def StringListSaveContent(self,save_path, filename, slist,item):
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         path = save_path+"/"+filename+".txt"
@@ -62,10 +65,21 @@ class SpiderNewsClass(object):
             for s in slist:
                 fp.write("%s\n" % (s[0].encode("utf8")))
 
+        #. 保存爬虫信息
         spider_news_content = ''
         for s in slist:
             spider_news_content = spider_news_content + s[0] + '\n'
-        self.SaveSpiderNews(spider_news_content)
+
+        #1. 生成词云，并返回图片路径
+        curenttime = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        savefig_path = self.create_wordcloud(spider_news_content,curenttime,item)
+
+        #2. 保存到数据库
+        savefig_path_link = '![wordcloud](%s)' % (savefig_path)
+        print 'savefig_path_link',savefig_path_link
+        spider_news_content = savefig_path_link + '<br/>' + spider_news_content
+        curenttime = str(datetime.datetime.now())
+        self.SaveSpiderNews(spider_news_content,curenttime)
 
 
     def Page_Info(self,myPage):
@@ -98,27 +112,24 @@ class SpiderNewsClass(object):
         self.StringListSave(save_path, filename, myPageResults)
         i += 1
         for item, url in myPageResults:
-            if u'科技' not in item:
-                print item
+            if(item not in [u'科技', u'财经' ,u'读书']):
+                print 'filter= %s' % item
                 continue
             print "downloading ", url
             new_page = requests.get(url).content.decode("gbk")
             # new_page = urllib2.urlopen(url).read().decode("gbk")
             newPageResults = self.New_Page_Info(new_page)
             filename = str(i)+"_"+item
-            self.StringListSaveContent(save_path, filename, newPageResults)
+            self.StringListSaveContent(save_path, filename, newPageResults,item)
             i += 1
 
-    def create_wordcloud(self):
-        print 'create_wordcloud'
-        text_from_file_with_apath = open(u'网易新闻抓取/1_科技.txt').read()
-        print 'text_from_file_with_apath',text_from_file_with_apath
+    def create_wordcloud(self, spider_news_content,curenttime,item):
+        #print 'create_wordcloud'
+        #text_from_file_with_apath = open(u'网易新闻抓取/1_科技.txt').read()
+        #print 'text_from_file_with_apath',text_from_file_with_apath
 
-        wordlist_after_jieba = jieba.cut(text_from_file_with_apath, cut_all=True)
+        wordlist_after_jieba = jieba.cut(spider_news_content, cut_all=True)
         wl_space_split = " ".join(wordlist_after_jieba)
-
-        #en
-        #my_wordcloud = WordCloud().generate(wl_space_split)
 
         #ch
         wc1 = WordCloud(
@@ -130,26 +141,39 @@ class SpiderNewsClass(object):
         my_wordcloud = wc1.generate(wl_space_split)
 
         #save wordcloud to image, upload to my blog
-        #plt.imshow(my_wordcloud)
-        #plt.axis("off")
+        plt.imshow(my_wordcloud)
+        plt.axis("off")
+        savefig_path = './static/NewsImg/%s_news_wordcloud_%s.png' % (item, curenttime)
+        print savefig_path
+        plt.savefig(savefig_path)
         #plt.show()
 
-    def spidermain(self):
-        print "start"
-        start_url = "http://news.163.com/rank/"
-        self.Spider(start_url)
+        savefig_path = '/static/NewsImg/%s_news_wordcloud_%s.png' % (item, curenttime)
+        return savefig_path
 
-        self.create_wordcloud()
+    def spidermain(self):
+        print "start spidermain"
+        start_url = "http://news.163.com/rank/"
+
+        try:
+            self.Spider(start_url)
+        except:
+            pass
+
         print "end"
 
 # 每隔10s执行一次f10s
-webspider_switch = True
+webspider_switch = False
+webspider_timer = ['22-47-30']
 def f10s():
     global webspider_switch
-    print '10s ', datetime.datetime.now()
+    '22-06-05'
+
+    curtimer = datetime.datetime.now().strftime("%H-%M-%S")
+    print '10s ', curtimer
 
     SpiderObject = SpiderNewsClass()
 
-    if (webspider_switch == True):
+    if (webspider_switch == True)or (curtimer in webspider_timer):
         webspider_switch = False
         SpiderObject.spidermain()

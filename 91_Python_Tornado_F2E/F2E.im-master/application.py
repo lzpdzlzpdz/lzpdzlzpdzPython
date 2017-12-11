@@ -137,10 +137,6 @@ class Application(tornado.web.Application):
         self.mc = memcache.Client(["127.0.0.1:11211"])
 
 
-
-
-
-
 def main():
     app = Application()
     #tornado server
@@ -151,7 +147,7 @@ def main():
 
     #timer
 
-    tornado.ioloop.PeriodicCallback(f10s , 10*1000).start()  # start scheduler
+    tornado.ioloop.PeriodicCallback(f10s , 1*1000).start()  # start scheduler
 
     #while(1)
     tornado.ioloop.IOLoop.instance().start()

@@ -1,0 +1,3 @@
+import svmMLiA
+
+svmMLiA.testDigits()

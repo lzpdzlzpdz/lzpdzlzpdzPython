@@ -82,6 +82,7 @@ def classifyVector(inX, weights):
     else: return 0.0
 
 def colicTest():
+    # calculate trainWeights of logitic regression
     frTrain = open('horseColicTraining.txt'); frTest = open('horseColicTest.txt')
     trainingSet = []; trainingLabels = []
     for line in frTrain.readlines():
@@ -92,6 +93,8 @@ def colicTest():
         trainingSet.append(lineArr)
         trainingLabels.append(float(currLine[21]))
     trainWeights = stocGradAscent1(array(trainingSet), trainingLabels, 1000)
+
+    #classify by logitic regression
     errorCount = 0; numTestVec = 0.0
     for line in frTest.readlines():
         numTestVec += 1.0

@@ -1,3 +1,4 @@
+# =coding:utf-8
 '''
 Created on Nov 4, 2010
 Chapter 5 source file for Machine Learing in Action
@@ -69,7 +70,17 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
         print "iteration number: %d" % iter
     return b,alphas
 
-def kernelTrans(X, A, kTup): #calc the kernel or transform data to a higher dimensional space
+'''
+#calc the kernel or transform data to a higher dimensional space
+    通过核函数将数据转换更高维的空间
+    Parameters：
+        X - 数据矩阵
+        A - 单个数据的向量
+        kTup - 包含核函数信息的元组
+    Returns:
+        K - 计算的核K
+'''
+def kernelTrans(X, A, kTup):
     m,n = shape(X)
     K = mat(zeros((m,1)))
     if kTup[0]=='lin': K = X * A.T   #linear kernel
@@ -150,6 +161,9 @@ def innerL(i, oS):
         return 1
     else: return 0
 
+'''
+SMO algorithm: 
+'''
 def smoP(dataMatIn, classLabels, C, toler, maxIter,kTup=('lin', 0)):    #full Platt SMO
     oS = optStruct(mat(dataMatIn),mat(classLabels).transpose(),C,toler, kTup)
     iter = 0
@@ -180,6 +194,9 @@ def calcWs(alphas,dataArr,classLabels):
         w += multiply(alphas[i]*labelMat[i],X[i,:].T)
     return w
 
+'''
+main: testRbf
+'''
 def testRbf(k1=1.3):
     dataArr,labelArr = loadDataSet('testSetRBF.txt')
     b,alphas = smoP(dataArr, labelArr, 200, 0.0001, 10000, ('rbf', k1)) #C=200 important
@@ -229,14 +246,22 @@ def loadImages(dirName):
         trainingMat[i,:] = img2vector('%s/%s' % (dirName, fileNameStr))
     return trainingMat, hwLabels    
 
+'''
+1. main function:testDigits
+'''
 def testDigits(kTup=('rbf', 10)):
+    #1.1 load training images
     dataArr,labelArr = loadImages('trainingDigits')
+
+    #1.2 run SMO algorithm by training datas
     b,alphas = smoP(dataArr, labelArr, 200, 0.0001, 10000, kTup)
     datMat=mat(dataArr); labelMat = mat(labelArr).transpose()
     svInd=nonzero(alphas.A>0)[0]
     sVs=datMat[svInd] 
     labelSV = labelMat[svInd];
     print "there are %d Support Vectors" % shape(sVs)[0]
+
+    #1.3 run  kernelTrans algorithm
     m,n = shape(datMat)
     errorCount = 0
     for i in range(m):
@@ -244,6 +269,8 @@ def testDigits(kTup=('rbf', 10)):
         predict=kernelEval.T * multiply(labelSV,alphas[svInd]) + b
         if sign(predict)!=sign(labelArr[i]): errorCount += 1
     print "the training error rate is: %f" % (float(errorCount)/m)
+
+    #1.4 load test images  and run kernelTrans algorithm
     dataArr,labelArr = loadImages('testDigits')
     errorCount = 0
     datMat=mat(dataArr); labelMat = mat(labelArr).transpose()
